@@ -3,7 +3,7 @@ const path =require('path');
 const app =express();
 const ProjectBL =require('./api/AllBL/v1/ProjectBL');
 const { error } = require('console');
-const {db,tManageDeveloper} =require('./api/DbHelper/models_EpcoCloud');
+const {db,TManageDeveloper} =require('./api/DbHelper/models_EpcoCloud');
 app.get('/connect',async (req,res)=>{
     var str =await db.Connect();
     res.send(str);
@@ -57,7 +57,7 @@ const endMiddleware =async (req, res, next) => {
       res.send({status:false,error:'必须要有请求参数[user]'});
       return;
     }
-    let tmd =await db.getForm(tManageDeveloper,{dno:appid});
+    let tmd =await db.getForm(TManageDeveloper,{dno:appid});
     console.log(tmd);
     // res.send({status:false,error:'授权失败'});
     next();
@@ -66,9 +66,6 @@ app.use('/api/*',endMiddleware);
 
 app.use(express.static(viewsPath));
 app.use('/api/v1/project',ProjectBL);
-
-
-
 
 
 app.listen(3000);

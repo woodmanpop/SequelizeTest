@@ -54,11 +54,16 @@ class Database{
             const data= await dataTable.findAll({where:condition});
             var rlt = null;
             if(data.length>0)
-                rlt =rlt[0].toJSON();
+                rlt =data[0].toJSON();
             return {status:true,data:rlt};
         }catch(error){
             return {status:false,error:error};
         }
     }
 }
-module.exports =Database;
+const db_bhepco =new Database('192.168.254.9',1998,'mssql','BHEpco','sa','Ep5admin');
+const db_epcocloud =new Database('192.168.254.9',1998,'mssql','EpcoCloud','sa','Ep5admin');
+module.exports ={
+    db_bhepco,
+    db_epcocloud
+}

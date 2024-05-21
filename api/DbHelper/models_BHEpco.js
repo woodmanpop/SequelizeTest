@@ -1,6 +1,7 @@
 const {Model, DataTypes} =require('sequelize');
 const Database=require('./sequelize');
-const db =new Database('192.168.254.9',1998,'mssql','BHEpco','sa','Ep5admin')
+// const db =new Database('192.168.254.9',1998,'mssql','BHEpco','sa','Ep5admin')
+const {db_bhepco} =require('./sequelize');
 class VProject extends Model{}
 
 VProject.init(
@@ -20,12 +21,12 @@ VProject.init(
             field:'d_start'
         }
     },{
-        sequelize:db.sequelize,
+        sequelize:db_bhepco.sequelize,
         timestamps:false,
         tableName:'V_Project'
     }
 )
 module.exports={
-    db,
+    db:db_bhepco,
     VProject
 }
