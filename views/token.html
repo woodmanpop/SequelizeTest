@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>jQuery EasyUI Demo</title>
+	<link rel="stylesheet" type="text/css" href="jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="jquery-easyui/themes/icon.css">
+	<script type="text/javascript" src="jquery-easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="datagrid-filter.js"></script>
+	<style>
+		.icon-filter{
+			background:url('filter.png') no-repeat center center;
+		}
+	</style>
+	<script>
+		$(function(){
+			var token =sessionStorage.getItem('token');
+            alert(token);
+		});
+	</script>
+</head>
+<body>
+	<a href="datagrid-filter.html">返回</a>
+</body>
+</html>

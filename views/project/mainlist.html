@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>jQuery EasyUI Demo</title>
+	<link rel="stylesheet" type="text/css" href="../jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../jquery-easyui/themes/icon.css">
+	<script type="text/javascript" src="../jquery-easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="../jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../datagrid-filter.js"></script>
+	<script type="text/javascript" src="../jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../Crypto/CryptoJS.min.js"></script>
+	<!-- <script type="text/javascript" src="../../node_modules/crypto-js/crypto-js.js"/> -->
+	<style>
+		.icon-filter{
+			background:url('filter.png') no-repeat center center;
+		}
+	</style>
+	<script>
+		var ver= 'v1';
+		$(function(){
+			var dg = $('#dg').datagrid({
+				filterBtnIconCls:'icon-filter',
+				onDblClickRow:function(rowIndex,rowData){
+					SendMessage(JSON.stringify(rowData));
+				},
+				// url:'/api/v1/project/getlist',
+			});
+			
+			SetFilter();
+			$('#btn').click(function(){
+				SetFilter();
+				
+			});
+			window.chrome.webview.addEventListener("message", receiveMessage);
+			function receiveMessage(event) {
+				var token =JSON.parse(event.data);
+				sessionStorage.setItem('appid',token.appid);
+				sessionStorage.setItem('token',token.token);
+				sessionStorage.setItem('user',token.user);
+				LoadData();
+			}
+		});
+		function LoadData(){
+			var timestamp = Date.now() / 1000;
+			var secretKey = sessionStorage.getItem('token');
+			var signature = CryptoJS.HmacSHA256(timestamp.toString(), secretKey).toString();
+			console.log('signature:'+signature);
+			$.ajax({
+				url: '/api/'+ver+'/project/getlist',
+				type: 'POST',
+				headers:{
+					appid:sessionStorage.getItem('appid'),
+					user:sessionStorage.getItem('user'),
+					timestamp:timestamp
+				},
+				success: function(data) {
+					// 处理成功响应
+					console.log(data);
+					var dg = $('#dg')
+					if(data.status){
+						dg.datagrid({
+							data:data.rows
+						});
+					}
+					else{
+						$.messager.alert("提示", data.error, "error");
+					}
+				},
+				error: function(xhr, status, error) {
+					// 弹出错误信息
+					alert('发生错误：' + xhr.responseJSON.error);
+				},
+				complete:function(){
+					console.log('complete');
+				}
+			});
+		}
+		function SendMessage(data){
+			if(window.chrome.webview.postMessage!==undefined)
+			{
+				window.chrome.webview.postMessage(data);
+			}
+		}
+		var isFilter =true;
+		function SetFilter(){
+				
+			var dg = $('#dg');
+			if(isFilter){
+				dg.datagrid('disableFilter');
+				isFilter =false;
+			}
+			else{
+				isFilter=true;
+				dg.datagrid('enableFilter', [{
+					field:'sort',
+					type:'label',
+				},{
+					field:'listprice',
+					type:'numberbox',
+					options:{precision:1},
+					op:['equal','notequal','less','greater']
+				},{
+					field:'unitcost',
+					type:'numberbox',
+					options:{precision:1},
+					op:['equal','notequal','less','greater']
+				},{
+					field:'status',
+					type:'combobox',
+					options:{
+						panelHeight:'auto',
+						data:[{value:'',text:'All'},{value:'P',text:'P'},{value:'N',text:'N'}],
+						onChange:function(value){
+							if (value == ''){
+								dg.datagrid('removeFilterRule', 'status');
+							} else {
+								dg.datagrid('addFilterRule', {
+									field: 'status',
+									op: 'equal',
+									value: value
+								});
+							}
+							dg.datagrid('doFilter');
+						}
+					}
+				}]);
+			}
+		}
+	</script>
+</head>
+<body>
+	<table id="dg" style="width:100%;height:750px" data-options="
+				singleSelect:true
+			">
+		<thead>
+			<tr>
+				<th data-options="field:'sort'"><image id="btn" src="../filter.png" cursor="arrow"/></th>
+				<th data-options="field:'dno'">项目编号</th>
+				<th data-options="field:'dname'">项目名称</th>
+				<th data-options="field:'dstart',align:'right'">委托日</th>
+			</tr>
+		</thead>
+	</table>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "epcoapiwebsite",
+  "version": "1.0.1",
+  "description": "Api+View",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "express": "^4.19.2",
+    "sequelize": "^6.37.3",
+    "tedious": "^18.2.0"
+  }
+}
